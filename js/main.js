@@ -113,6 +113,6 @@ var calendarData = function () {
     console.log(calendar)
     return calendar;
 };
-
-// var test = moment().day(5).week(39)var test = moment().day(5).week(39)
-
+$.fn.xclndr = function () {
+    //this or $(this)
+};
