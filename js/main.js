@@ -6,21 +6,39 @@ var makeCalendar = function () {
 
     // options
     var _month = 0;
+    var _last = 0;
     // console.log(calendar.today);
 
     for (var i = 0; i < calendar.data.length; i++) {
         // console.log(i);
         if (_month != calendar.data[i].month) {
-            _month = calendar.data[i].month;
-            // console.log('hello');
-            e.append(createMonth(calendar.data[i]));
-            e.append(createWeek(calendar.data[i], calendar.today));
 
+            // console.log('hello');
+
+            // 이곳에서 startofMonth & endofMonth를 파악해야한다?
+            //
+            /**
+             * month가 바뀌었다.
+             * 전 month의 마지막 day를 출력하였는가??
+             * yes -> 진행
+             * no -> week를 하나 더 붙인다.
+             */
+            console.log(calendar.data[i]);
+
+            e.append(createMonth(calendar.data[i]));
+            _last = moment().day(0).week(calendar.data[i].week).format('D'); // sunday가 1일인지 확인후, 1일이 아닐경우 1주 전 데이터를 한번더 출력함.
+            if (_last > 1 && _month !== 0) {
+                e.append(createWeek(calendar.data[i - 1], calendar.today, calendar.data[i].month));
+            }
+            e.append(createWeek(calendar.data[i], calendar.today, calendar.data[i].month));
+
+            // month 값을 바꿈
+            _month = calendar.data[i].month;
         } else if (_month == calendar.data[i].month) {
             // var endMonth = moment().endOf('month')
             // console.log(endMonth)
             // console.log('hello2');
-            e.append(createWeek(calendar.data[i], calendar.today));
+            e.append(createWeek(calendar.data[i], calendar.today, calendar.data[i].month));
         }
     }
 
@@ -45,12 +63,14 @@ var createMonth = function (time) {
 };
 
 
-var createWeek = function (time, today) {
+var createWeek = function (time, today, month) {
     var _templateBody = '';
-
+    console.log(moment().endOf('month'));
     for (var i = 0; i < 7; i++) {
         // var date = moment().day(i).week(time.week).format('D');
+
         var date = moment().day(i).week(time.week);
+        // console.log(date)
         // var startDate = date.startOf('month');
         // var endDate = date.endOf('month');
 
@@ -59,6 +79,10 @@ var createWeek = function (time, today) {
         // if (startDate) {
         //
         // }
+        // if (i == 0) {
+        //     _last = date.foramt('D');
+        // }
+
         var pastClass = '';
         var notClass = '';
 
@@ -66,8 +90,12 @@ var createWeek = function (time, today) {
         // if (date.format('D') * 1 < today.format('D') * 1) {
         if (date.isBefore(today)) {
             pastClass = 'past-day';
-            console.log('1')
         }
+
+        /**
+         * if date is after last day or before start day
+         * notClass == 'past-day'
+         */
 
         var week = '<div class="calendar-day calendar-day-grid calendar-date ' + date.format('YYYY-MM-DD') + ' ' + pastClass + ' ">' + date.format('D') + '</div>';
         // console.log(_templateBody)
@@ -79,6 +107,8 @@ var createWeek = function (time, today) {
 
     return _template
 };
+
+
 
 var calendarData = function () {
     // console.log("ha2");
@@ -102,10 +132,11 @@ var calendarData = function () {
             day = day.add(7, 'days');
         }
 
+        // moment().day(i).week(time.week)
         // data 객체 생성
         var _data = {
             week: i + (thisWeek * 1), // iso 포맷의 week number를 저장
-            month: day.format('MM'), //
+            month: moment().day(0).week(i + (thisWeek * 1)).format('MM'), //
             year: day.format('YYYY')
         };
 
