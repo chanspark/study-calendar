@@ -28,9 +28,9 @@ var makeCalendar = function () {
             e.append(createMonth(calendar.data[i]));
             _last = moment().day(0).week(calendar.data[i].week).format('D'); // sunday가 1일인지 확인후, 1일이 아닐경우 1주 전 데이터를 한번더 출력함.
             if (_last > 1 && _month !== 0) {
-                e.append(createWeek(calendar.data[i - 1], calendar.today, calendar.data[i].month));
+                e.append(createWeek(calendar.data[i - 1], calendar.today, calendar.data[i].month, calendar.data[i].year));
             }
-            e.append(createWeek(calendar.data[i], calendar.today, calendar.data[i].month));
+            e.append(createWeek(calendar.data[i], calendar.today, calendar.data[i].month, calendar.data[i].year));
 
             // month 값을 바꿈
             _month = calendar.data[i].month;
@@ -38,7 +38,7 @@ var makeCalendar = function () {
             // var endMonth = moment().endOf('month')
             // console.log(endMonth)
             // console.log('hello2');
-            e.append(createWeek(calendar.data[i], calendar.today, calendar.data[i].month));
+            e.append(createWeek(calendar.data[i], calendar.today, calendar.data[i].month, calendar.data[i].year));
         }
     }
 
@@ -63,18 +63,20 @@ var createMonth = function (time) {
 };
 
 
-var createWeek = function (time, today, month) {
+var createWeek = function (time, today, month, year) {
     var _templateBody = '';
-    console.log(moment().endOf('month'));
+    // console.log(moment().endOf('month'));
     for (var i = 0; i < 7; i++) {
         // var date = moment().day(i).week(time.week).format('D');
 
         var date = moment().day(i).week(time.week);
-        // console.log(date)
-        // var startDate = date.startOf('month');
-        // var endDate = date.endOf('month');
+        // console.log(month)
+        var startDate = moment([year, month * 1 - 1]);
+        // console.log(startDate);
+        var endDate = moment(startDate).endOf('month');
 
-        // console.log(startDate, endDate);
+        // console.log(startDate);
+        // console.log(endDate);
 
         // if (startDate) {
         //
@@ -97,7 +99,11 @@ var createWeek = function (time, today, month) {
          * notClass == 'past-day'
          */
 
-        var week = '<div class="calendar-day calendar-day-grid calendar-date ' + date.format('YYYY-MM-DD') + ' ' + pastClass + ' ">' + date.format('D') + '</div>';
+        if (date.isBefore(startDate) || date.isAfter(endDate)) {
+            notClass = 'not-day'
+        }
+
+        var week = '<div class="calendar-day calendar-day-grid calendar-date ' + date.format('YYYY-MM-DD') + ' ' + pastClass + ' ' + notClass + ' ">' + date.format('D') + '</div>';
         // console.log(_templateBody)
         _templateBody += week;
     }
@@ -137,7 +143,7 @@ var calendarData = function () {
         var _data = {
             week: i + (thisWeek * 1), // iso 포맷의 week number를 저장
             month: moment().day(0).week(i + (thisWeek * 1)).format('MM'), //
-            year: day.format('YYYY')
+            year: moment().day(0).week(i + (thisWeek * 1)).format('YYYY')
         };
 
         //data 객체를 배열로 push
@@ -145,7 +151,7 @@ var calendarData = function () {
     }
 
     // console.log(calendar.today);
-    // console.log(calendar)
+    console.log(calendar)
     return calendar;
 };
 

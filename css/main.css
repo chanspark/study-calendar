@@ -63,3 +63,6 @@ body {
 .past-day {
     color: transparent;
 }
+.not-day {
+    color: #ddd;
+}
