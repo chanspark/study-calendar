@@ -1,57 +1,35 @@
 var makeCalendar = function () {
-    // console.log(calendarData());
     var e = $('#calendar');
     var calendar = calendarData();
-    // console.log(calendar);
 
     // options
-    var _month = 0;
-    var _last = 0;
-    // console.log(calendar.today);
+    var _month = 0; // data의 month값을 지정하는 변수
+    var _last = 0; // month가 바뀌는 주의 일요일이 무슨 date인지 파악하는 변수
 
     for (var i = 0; i < calendar.data.length; i++) {
-        // console.log(i);
-        if (_month != calendar.data[i].month) {
+        var calData = calendar.data[i];
 
-            // console.log('hello');
-
-            // 이곳에서 startofMonth & endofMonth를 파악해야한다?
-            //
-            /**
-             * month가 바뀌었다.
-             * 전 month의 마지막 day를 출력하였는가??
-             * yes -> 진행
-             * no -> week를 하나 더 붙인다.
-             */
-            console.log(calendar.data[i]);
-
-            e.append(createMonth(calendar.data[i]));
+        if (_month != calData.month) { // 월이 바뀔경우 진입
+            // console.log(calendar.data[i]);
+            e.append(createMonth(calData)); // 월 표시를 append
             _last = moment().day(0).week(calendar.data[i].week).format('D'); // sunday가 1일인지 확인후, 1일이 아닐경우 1주 전 데이터를 한번더 출력함.
-            if (_last > 1 && _month !== 0) {
-                e.append(createWeek(calendar.data[i - 1], calendar.today, calendar.data[i].month, calendar.data[i].year));
-            }
-            e.append(createWeek(calendar.data[i], calendar.today, calendar.data[i].month, calendar.data[i].year));
 
-            // month 값을 바꿈
-            _month = calendar.data[i].month;
-        } else if (_month == calendar.data[i].month) {
-            // var endMonth = moment().endOf('month')
-            // console.log(endMonth)
-            // console.log('hello2');
-            e.append(createWeek(calendar.data[i], calendar.today, calendar.data[i].month, calendar.data[i].year));
+            if (_last > 1 && _month !== 0) {
+                e.append(createWeek(calendar.data[i - 1], calendar.today, calData.month, calData.year)); // 전주 생성
+            }
+
+            e.append(createWeek(calData, calendar.today, calData.month, calData.year)); // 이번주 생성
+            _month = calData.month; // month 값을 바꿈
+        } else if (_month == calData.month) {
+            e.append(createWeek(calData, calendar.today, calData.month, calData.year)); // 이번주 생성
         }
     }
 
-    // var setToday = calendar.today.format('YYYY-MM-DD');
-    // console.log(calendar.today.format('YYYY-MM-DD'));
-    $('.' + calendar.today.format('YYYY-MM-DD')).addClass('day-today');
-    // $('.calendar-week');
-    $('.calendar-week:nth-child(3)').addClass('week-selected');
-    // $('.calendar-week:first-of-type').addClass('week-selected');
+    $('.' + calendar.today.format('YYYY-MM-DD')).addClass('day-today'); //
+    $('.calendar-week:nth-child(3)').addClass('week-selected'); // 왜 3번째인지.. 참..
 };
 
 var createMonth = function (time) {
-  // console.log(time);
   var _template =
     '<div class="calendar-month c-month-' + time.month + '">' +
         '<h2 class="calendar-title">' + time.year + '년 ' + time.month + '월</h2>' +
@@ -65,51 +43,32 @@ var createMonth = function (time) {
 
 var createWeek = function (time, today, month, year) {
     var _templateBody = '';
-    // console.log(moment().endOf('month'));
     for (var i = 0; i < 7; i++) {
-        // var date = moment().day(i).week(time.week).format('D');
-
         var date = moment().day(i).week(time.week);
-        // console.log(month)
         var startDate = moment([year, month * 1 - 1]);
-        // console.log(startDate);
         var endDate = moment(startDate).endOf('month');
-
-        // console.log(startDate);
-        // console.log(endDate);
-
-        // if (startDate) {
-        //
-        // }
-        // if (i == 0) {
-        //     _last = date.foramt('D');
-        // }
 
         var pastClass = '';
         var notClass = '';
 
-
-        // if (date.format('D') * 1 < today.format('D') * 1) {
         if (date.isBefore(today)) {
             pastClass = 'past-day';
         }
 
         /**
          * if date is after last day or before start day
-         * notClass == 'past-day'
+         * notClass == 'not-day'
          */
 
         if (date.isBefore(startDate) || date.isAfter(endDate)) {
             notClass = 'not-day'
         }
 
-        var week = '<div class="calendar-day calendar-day-grid calendar-date ' + date.format('YYYY-MM-DD') + ' ' + pastClass + ' ' + notClass + ' ">' + date.format('D') + '</div>';
-        // console.log(_templateBody)
-        _templateBody += week;
+        var _week = '<div class="calendar-day calendar-day-grid calendar-date ' + date.format('YYYY-MM-DD') + ' ' + pastClass + ' ' + notClass + ' ">' + date.format('D') + '</div>';
+
+        _templateBody += week; // add week html string
     }
-    var _template =
-        // '<div class="calendar-week week-today week-' + time.week + '">' + _templateBody + '</div>';
-    '<div class="calendar-week c-week-' + time.week + '">' + _templateBody + '</div>';
+    var _template = '<div class="calendar-week c-week-' + time.week + '">' + _templateBody + '</div>';
 
     return _template
 };
