@@ -60,3 +60,6 @@ body {
 .calendar-week:hover {
     background: #f9f9f9;
 }
+.past-day {
+    color: transparent;
+}

@@ -12,14 +12,15 @@ var makeCalendar = function () {
         // console.log(i);
         if (_month != calendar.data[i].month) {
             _month = calendar.data[i].month;
-
+            // console.log('hello');
             e.append(createMonth(calendar.data[i]));
-            e.append(createWeek(calendar.data[i]));
+            e.append(createWeek(calendar.data[i], calendar.today));
 
         } else if (_month == calendar.data[i].month) {
             // var endMonth = moment().endOf('month')
             // console.log(endMonth)
-            e.append(createWeek(calendar.data[i]));
+            // console.log('hello2');
+            e.append(createWeek(calendar.data[i], calendar.today));
         }
     }
 
@@ -44,7 +45,7 @@ var createMonth = function (time) {
 };
 
 
-var createWeek = function (time) {
+var createWeek = function (time, today) {
     var _templateBody = '';
 
     for (var i = 0; i < 7; i++) {
@@ -58,8 +59,17 @@ var createWeek = function (time) {
         // if (startDate) {
         //
         // }
+        var pastClass = '';
+        var notClass = '';
 
-        var week = '<div class="calendar-day calendar-day-grid calendar-date ' + date.format('YYYY-MM-DD') + ' ">' + date.format('D') + '</div>';
+
+        // if (date.format('D') * 1 < today.format('D') * 1) {
+        if (date.isBefore(today)) {
+            pastClass = 'past-day';
+            console.log('1')
+        }
+
+        var week = '<div class="calendar-day calendar-day-grid calendar-date ' + date.format('YYYY-MM-DD') + ' ' + pastClass + ' ">' + date.format('D') + '</div>';
         // console.log(_templateBody)
         _templateBody += week;
     }
@@ -84,7 +94,7 @@ var calendarData = function () {
     // var thisYear = moment().year();
     var day = 0;
     // calendar의 data 객체를 생성함.
-    for (i = 0; i < 6; i++) { // 오늘 부터 +6주까지 계산함
+    for (i = 0; i < 24; i++) { // 오늘 부터 +6주까지 계산함
         // '오늘'을 계산하기 위한 변수. 값이 0이면 오늘 값을 넣고 아니면 1주일을 더한날을 입력
         if (day == 0) {
             day = today;

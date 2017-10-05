@@ -105,12 +105,6 @@ crashlytics-build.properties
 fabric.properties
 
 .gitignore
-clndr.js
-moment.js
-underscore.js
 .idea/calendar-chnxprk.iml
 .idea/markdown-navigator/
 .idea/modules.xml
-js/clndr.js
-js/moment.js
-js/underscore.js
